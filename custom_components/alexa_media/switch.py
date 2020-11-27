@@ -135,7 +135,11 @@ class AlexaMediaSwitch(SwitchDevice, AlexaMedia):
     """Representation of a Alexa Media switch."""
 
     def __init__(
-        self, client, switch_property: Text, switch_function: Text, name="Alexa",
+        self,
+        client,
+        switch_property: Text,
+        switch_function: Text,
+        name="Alexa",
     ):
         """Initialize the Alexa Switch device."""
         # Class info
@@ -295,7 +299,10 @@ class DNDSwitch(AlexaMediaSwitch):
         """Initialize the Alexa Switch."""
         # Class info
         super().__init__(
-            client, "dnd_state", "set_dnd_state", "do not disturb",
+            client,
+            "dnd_state",
+            "set_dnd_state",
+            "do not disturb",
         )
 
     @property

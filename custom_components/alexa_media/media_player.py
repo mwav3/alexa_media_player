@@ -1175,7 +1175,8 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
                 "%s:Running routine %s with queue_delay %s", self, media_id, queue_delay
             )
             await self.alexa_api.run_routine(
-                media_id, queue_delay=queue_delay,
+                media_id,
+                queue_delay=queue_delay,
             )
         elif media_type == "sound":
             _LOGGER.debug(
@@ -1192,7 +1193,8 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
                 "%s:Running skill %s with queue_delay %s", self, media_id, queue_delay
             )
             await self.alexa_api.run_skill(
-                media_id, queue_delay=queue_delay,
+                media_id,
+                queue_delay=queue_delay,
             )
         elif media_type == "image":
             _LOGGER.debug("%s:Setting background to %s", self, media_id)

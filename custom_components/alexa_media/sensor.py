@@ -184,7 +184,8 @@ class AlexaMediaNotificationSensor(Entity):
             # cancel any event triggers
             if self._tracker:
                 _LOGGER.debug(
-                    "%s: Cancelling old event", self,
+                    "%s: Cancelling old event",
+                    self,
                 )
                 self._tracker()
             if self._state != STATE_UNAVAILABLE:
