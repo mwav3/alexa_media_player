@@ -76,10 +76,12 @@ class AlexaMediaServices:
     async def unregister(self):
         """Register services to hass."""
         self.hass.services.async_remove(
-            DOMAIN, SERVICE_UPDATE_LAST_CALLED,
+            DOMAIN,
+            SERVICE_UPDATE_LAST_CALLED,
         )
         self.hass.services.async_remove(
-            DOMAIN, SERVICE_CLEAR_HISTORY,
+            DOMAIN,
+            SERVICE_CLEAR_HISTORY,
         )
         self.hass.services.async_remove(DOMAIN, SERVICE_FORCE_LOGOUT)
 

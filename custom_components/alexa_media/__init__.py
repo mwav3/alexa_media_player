@@ -25,6 +25,7 @@ from alexapy import (
     obfuscate,
 )
 import async_timeout
+from homeassistant import util
 from homeassistant.config_entries import SOURCE_IMPORT
 from homeassistant.const import (
     CONF_EMAIL,
@@ -38,7 +39,6 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt
-from homeassistant import util
 import voluptuous as vol
 
 from .config_flow import in_progess_instances
@@ -61,7 +61,7 @@ from .const import (
     SCAN_INTERVAL,
     STARTUP,
 )
-from .helpers import _existing_serials, _catch_login_errors
+from .helpers import _catch_login_errors, _existing_serials
 from .notify import async_unload_entry as notify_async_unload_entry
 from .services import AlexaMediaServices
 
@@ -860,7 +860,7 @@ async def setup_alexa(hass, config_entry, login_obj):
                 "%s: Close requested; will not reconnect websocket", hide_email(email)
             )
             return
-        errors: int = (hass.data[DATA_ALEXAMEDIA]["accounts"][email]["websocketerror"])
+        errors: int = hass.data[DATA_ALEXAMEDIA]["accounts"][email]["websocketerror"]
         delay: int = 5 * 2 ** errors
         last_attempt = hass.data[DATA_ALEXAMEDIA]["accounts"][email][
             "websocket_lastattempt"
@@ -1061,9 +1061,7 @@ async def test_login_status(hass, config_entry, login) -> bool:
     account = config_entry.data
     _LOGGER.debug("Logging in: %s %s", obfuscate(account), in_progess_instances(hass))
     _LOGGER.debug("Login stats: %s", login.stats)
-    message: Text = (
-        "Reauthenticate on the [Integrations](/config/integrations) page. "
-    )
+    message: Text = "Reauthenticate on the [Integrations](/config/integrations) page. "
     if login.stats.get("login_timestamp") != datetime(1, 1, 1):
         elaspsed_time: str = str(datetime.now() - login.stats.get("login_timestamp"))
         api_calls: int = login.stats.get("api_calls")
