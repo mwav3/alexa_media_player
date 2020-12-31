@@ -9,12 +9,12 @@ https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers
 """
 from asyncio import sleep
 from collections import OrderedDict
+import datetime
 from datetime import timedelta
 from functools import reduce
 import logging
-import datetime
-from typing import Any, Optional, Text
 import re
+from typing import Any, Optional, Text
 
 from alexapy import (
     AlexaLogin,
@@ -41,10 +41,10 @@ from .const import (
     CONF_DEBUG,
     CONF_EXCLUDE_DEVICES,
     CONF_INCLUDE_DEVICES,
-    CONF_QUEUE_DELAY,
-    CONF_SECURITYCODE,
     CONF_OAUTH,
     CONF_OTPSECRET,
+    CONF_QUEUE_DELAY,
+    CONF_SECURITYCODE,
     CONF_TOTP_REGISTER,
     DATA_ALEXAMEDIA,
     DEFAULT_QUEUE_DELAY,
@@ -323,7 +323,8 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
         self.config["reauth"] = True
         reauth_schema = self._update_schema_defaults()
         _LOGGER.debug(
-            "Creating reauth form with %s", obfuscate(self.config),
+            "Creating reauth form with %s",
+            obfuscate(self.config),
         )
         self.automatic_steps = 0
         if self.login is None:
@@ -334,8 +335,10 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
             except KeyError:
                 self.login = None
         seconds_since_login: int = (
-            datetime.datetime.now() - self.login.stats["login_timestamp"]
-        ).seconds if self.login else 60
+            (datetime.datetime.now() - self.login.stats["login_timestamp"]).seconds
+            if self.login
+            else 60
+        )
         if seconds_since_login < 60:
             _LOGGER.debug(
                 "Relogin requested within %s seconds; manual login required",
@@ -447,7 +450,14 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
                     user_input={CONF_SECURITYCODE: self.securitycode}
                 )
             self.twofactor_schema = OrderedDict(
-                [(vol.Required(CONF_SECURITYCODE,), str,)]
+                [
+                    (
+                        vol.Required(
+                            CONF_SECURITYCODE,
+                        ),
+                        str,
+                    )
+                ]
             )
             self.automatic_steps = 0
             return self.async_show_form(
@@ -518,7 +528,9 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
             self.hass.components.persistent_notification.async_dismiss(
                 "alexa_media_relogin_required"
             )
-            return self.async_abort(reason=login.status.get("login_failed"),)
+            return self.async_abort(
+                reason=login.status.get("login_failed"),
+            )
         new_schema = self._update_schema_defaults()
         if login.status and login.status.get("error_message"):
             _LOGGER.debug("Login error detected: %s", login.status.get("error_message"))
@@ -636,7 +648,8 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
                     default=self.securitycode if self.securitycode else "",
                 ): str,
                 vol.Optional(
-                    CONF_OTPSECRET, default=self.config.get(CONF_OTPSECRET, ""),
+                    CONF_OTPSECRET,
+                    default=self.config.get(CONF_OTPSECRET, ""),
                 ): str,
                 vol.Required(
                     CONF_URL, default=self.config.get(CONF_URL, "amazon.com")
