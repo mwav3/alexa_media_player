@@ -1264,7 +1264,8 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
                 queue_delay,
             )
             await self.alexa_api.run_routine(
-                media_id, queue_delay=queue_delay,
+                media_id,
+                queue_delay=queue_delay,
             )
         elif media_type == "sound":
             _LOGGER.debug(
@@ -1289,7 +1290,8 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
                 queue_delay,
             )
             await self.alexa_api.run_skill(
-                media_id, queue_delay=queue_delay,
+                media_id,
+                queue_delay=queue_delay,
             )
         elif media_type == "image":
             _LOGGER.debug(
@@ -1370,7 +1372,8 @@ class AlexaClient(MediaPlayerDevice, AlexaMedia):
             notify = self.hass.data[DATA_ALEXAMEDIA].get("notify_service")
             if hasattr(notify, "registered_targets"):
                 _LOGGER.debug(
-                    "%s: Refreshing notify targets", hide_email(self._login.email),
+                    "%s: Refreshing notify targets",
+                    hide_email(self._login.email),
                 )
                 await notify.async_register_services()
             else:

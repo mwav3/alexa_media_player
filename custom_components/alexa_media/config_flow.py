@@ -7,33 +7,28 @@ Alexa Config Flow.
 For more details about this platform, please refer to the documentation at
 https://community.home-assistant.io/t/echo-devices-alexa-as-media-player-testers-needed/58639
 """
-from asyncio import sleep, Lock
-from aiohttp import web_response
+from asyncio import Lock, sleep
 from collections import OrderedDict
+import datetime
 from datetime import timedelta
 from functools import reduce
 import logging
-import datetime
-from typing import Any, Optional, Text
 import re
+from typing import Any, Optional, Text
 
+from aiohttp import web_response
 from alexapy import (
     AlexaLogin,
-    AlexapyConnectionError,
     AlexaProxy,
+    AlexapyConnectionError,
     AlexapyPyotpInvalidKey,
+    __version__ as alexapy_version,
     hide_email,
     obfuscate,
-    __version__ as alexapy_version,
 )
 from homeassistant import config_entries
 from homeassistant.components.http.view import HomeAssistantView
-from homeassistant.const import (
-    CONF_EMAIL,
-    CONF_PASSWORD,
-    CONF_SCAN_INTERVAL,
-    CONF_URL,
-)
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_SCAN_INTERVAL, CONF_URL
 from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.network import get_url
@@ -46,14 +41,14 @@ from .const import (
     CONF_COOKIES_TXT,
     CONF_DEBUG,
     CONF_EXCLUDE_DEVICES,
-    CONF_INCLUDE_DEVICES,
-    CONF_QUEUE_DELAY,
     CONF_HASS_URL,
-    CONF_SECURITYCODE,
+    CONF_INCLUDE_DEVICES,
     CONF_OAUTH,
     CONF_OAUTH_LOGIN,
     CONF_OTPSECRET,
     CONF_PROXY,
+    CONF_QUEUE_DELAY,
+    CONF_SECURITYCODE,
     CONF_TOTP_REGISTER,
     DATA_ALEXAMEDIA,
     DEFAULT_QUEUE_DELAY,
@@ -491,7 +486,9 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
     async def async_step_process(self, step_id, user_input=None):
         """Handle the input processing of the config flow."""
         _LOGGER.debug(
-            "Processing input for %s: %s", step_id, obfuscate(user_input),
+            "Processing input for %s: %s",
+            step_id,
+            obfuscate(user_input),
         )
         self._save_user_input_to_config(user_input=user_input)
         if user_input and user_input.get(CONF_PROXY):
@@ -524,7 +521,8 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
         self.config["reauth"] = True
         reauth_schema = self._update_schema_defaults()
         _LOGGER.debug(
-            "Creating reauth form with %s", obfuscate(self.config),
+            "Creating reauth form with %s",
+            obfuscate(self.config),
         )
         self.automatic_steps = 0
         if self.login is None:
@@ -535,8 +533,10 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
             except KeyError:
                 self.login = None
         seconds_since_login: int = (
-            datetime.datetime.now() - self.login.stats["login_timestamp"]
-        ).seconds if self.login else 60
+            (datetime.datetime.now() - self.login.stats["login_timestamp"]).seconds
+            if self.login
+            else 60
+        )
         if seconds_since_login < 60:
             _LOGGER.debug(
                 "Relogin requested within %s seconds; manual login required",
@@ -572,7 +572,8 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
                 "expires_in": login.expires_in,
             }
             self.hass.data.setdefault(
-                DATA_ALEXAMEDIA, {"accounts": {}, "config_flows": {}, "lock": Lock()},
+                DATA_ALEXAMEDIA,
+                {"accounts": {}, "config_flows": {}, "lock": Lock()},
             )
             if existing_entry:
                 self.hass.config_entries.async_update_entry(
@@ -880,7 +881,8 @@ class AlexaMediaFlowHandler(config_entries.ConfigFlow):
                     default=self.securitycode if self.securitycode else "",
                 ): str,
                 vol.Optional(
-                    CONF_OTPSECRET, default=self.config.get(CONF_OTPSECRET, ""),
+                    CONF_OTPSECRET,
+                    default=self.config.get(CONF_OTPSECRET, ""),
                 ): str,
                 vol.Required(
                     CONF_URL, default=self.config.get(CONF_URL, "amazon.com")

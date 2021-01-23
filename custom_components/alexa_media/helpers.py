@@ -15,10 +15,7 @@ from typing import Any, Callable, List, Optional, Text
 
 from alexapy import AlexapyLoginCloseRequested, AlexapyLoginError, hide_email
 from alexapy.alexalogin import AlexaLogin
-from homeassistant.const import (
-    CONF_EMAIL,
-    CONF_URL,
-)
+from homeassistant.const import CONF_EMAIL, CONF_URL
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_component import EntityComponent
 import wrapt
@@ -98,8 +95,8 @@ def retry_async(
     """
 
     def wrap(func) -> Callable:
-        import functools
         import asyncio
+        import functools
 
         @functools.wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
